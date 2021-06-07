@@ -17,7 +17,7 @@ bot.num_gifs = 0
 bot.phrase = ''
 
 
-mydb = mysql.connector.connect(host='remotemysql.com', user='1L5Gykodaj', password=os.getenv('sqlpass') , database='1L5Gykodaj')
+mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
 cur = mydb.cursor()
 
 @bot.event
@@ -26,13 +26,13 @@ async def on_ready():
 
 
 # initiated combogif command
-@bot.command(name='combogif',aliases=['cg','combo'],help="Used to create a combogif [Aliases : cg , combo]",rest_is_raw=True)
-async def combogif(ctx, *, arg):
+@bot.command(name='makecombo',aliases=['mc','combo'],help="Used to create a combogif [Aliases : mc , combo]",rest_is_raw=True)
+async def makecombo(ctx, *, arg):
     if not arg:
-        await ctx.send('You need to give a name after `combogif`')
+        await ctx.send('You need to give a name after `makecombo`')
         return
 
-    if bot.status[0] == 'combogif':
+    if bot.status[0] == 'makecombo':
         await ctx.send('`combogif` is being used now. Please wait.')
         return
 
@@ -52,7 +52,7 @@ async def combogif(ctx, *, arg):
     except mysql.connector.errors.ProgrammingError: # error raised when no record of that user is found
         await ctx.send(f"Send gif(s) you want to combine for `{bot.phrase}` or send `done` when done")
 
-    bot.status = ['combogif', ctx.message.author.id] 
+    bot.status = ['makecombo', ctx.message.author.id] 
 
     # checking table of that server exists in the db
     cur.execute('show tables')
@@ -82,7 +82,7 @@ async def on_message(message):
         return
 
     # if user is sending the gifs for making combo
-    if 'combogif' == bot.status[0]:
+    if 'makecombo' == bot.status[0]:
         # confirming same user initiated the sequence
         if message.author.id == bot.status[1]:
 
@@ -104,7 +104,7 @@ async def on_message(message):
                 bot.status = ['free']
                 bot.num_gifs = 0
 
-@bot.command(name="listcombo",aliases=['lc'],help="Lists your combo gifs [Aliases : lc]")
+@bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs [Aliases : lc , list]")
 async def list(ctx):
     server_id = ctx.guild.id
     cur.execute(f"select distinct gif_name from t{server_id} where user_id = '{ctx.message.author.id}'")
