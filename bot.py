@@ -6,26 +6,19 @@ import mysql.connector
 from dotenv import load_dotenv
 load_dotenv()
 
+help_command = commands.DefaultHelpCommand(
+    no_category = 'Commands'
+)
 
-bot = commands.Bot(command_prefix='::')
+bot = commands.Bot(command_prefix='::',help_command=help_command)
 
 bot.status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
 
 
-mydb = mysql.connector.connect(
-    host='localhost', user='root', password=os.getenv('sqlpass'))
+mydb = mysql.connector.connect(host='remotemysql.com', user='1L5Gykodaj', password=os.getenv('sqlpass') , database='1L5Gykodaj')
 cur = mydb.cursor()
-
-# checking if db exists
-cur.execute('show databases')
-dbs = cur.fetchall()
-
-if ('daa_bot_db',) not in dbs:
-    cur.execute('create database daa_bot_db')
-cur.execute('use daa_bot_db')
-
 
 @bot.event
 async def on_ready():
