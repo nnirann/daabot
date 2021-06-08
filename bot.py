@@ -10,20 +10,20 @@ help_command = commands.DefaultHelpCommand(
     no_category = 'Commands'
 )
 
-bot = commands.Bot(command_prefix='::',help_command=help_command)
+bot = commands.Bot(command_prefix=';',help_command=help_command)
 
 bot.status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
 
-
-mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
-cur = mydb.cursor()
-
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user.name}')
 
+mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
+cur = mydb.cursor()
+
+# --------------- START OF COMBOGIF COMMANDS --------------- #
 
 # initiated combogif command
 @bot.command(name='makecombo',aliases=['mc','combo'],help="Used to create a combogif [Aliases : mc , combo]",rest_is_raw=True)
@@ -133,5 +133,9 @@ async def delete(ctx,*,arg):
         await ctx.send(f"Combogif `{name}` was deleted.")
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
+
+
+# --------------- END OF COMBOGIF COMMANDS --------------- #
+
 
 bot.run(os.getenv('TOKEN'))
