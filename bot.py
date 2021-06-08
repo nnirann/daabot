@@ -1,6 +1,7 @@
 from discord import message
 from discord.ext import commands
 import os
+from discord.ext.commands.bot import AutoShardedBot
 import mysql.connector
 
 from dotenv import load_dotenv
@@ -100,7 +101,7 @@ async def on_message(message):
 
             # if its the end
             elif message.content == 'done':
-                await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `::send {bot.phrase}` for me to send this combo.')
+                await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
                 bot.status = ['free']
                 bot.num_gifs = 0
 
@@ -134,8 +135,41 @@ async def delete(ctx,*,arg):
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
 
-
 # --------------- END OF COMBOGIF COMMANDS --------------- #
+
+
+# --------------- START OF GAMELINK COMMANDS --------------- #
+
+
+@bot.command(name="gamelink",help="Gets gamelink (give no parameter after ';gamelink') / Stores game link (';gamelink <link> <password>') / Delete game link (';gamelink <del / delete / reset>')")
+async def gamelink(ctx,*arg):
+    print('hmm')
+    cur.execute('select * from gamelinks')
+    info = cur.fetchall()
+    
+    if not arg :
+        if len(info) == 0:
+            await ctx.send('No gamelink stored.')
+        else :
+            link,password,user = info[0]
+            await ctx.send(f"Created by <@{user}>\nLink: <{link}>\nPassword: {password}")
+    
+    elif arg[0] in ('delete','reset','del'):
+        cur.execute('truncate table gamelinks')
+        mydb.commit()
+        await ctx.send(f"Gamelink deleted.")
+
+    else:
+        link,password = arg
+        user = ctx.message.author.id
+        cur.execute('truncate table gamelinks')
+        mydb.commit()
+        cur.execute(f'insert into gamelinks values("{link}","{password}","{user}")')
+        mydb.commit()
+        await ctx.send(f"Gamelink <{link}> with password {password} stored.")
+
+
+# --------------- END OF GAMELINK COMMANDS --------------- #
 
 
 bot.run(os.getenv('TOKEN'))
