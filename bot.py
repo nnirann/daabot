@@ -137,6 +137,6 @@ async def delete(ctx,*,arg):
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
 
-# --------------- END OF COMBOGIF COMMANDS --------------- #
+# --------------- END OF COMBOGIF COMMANDS -------------- #
 
 bot.run(os.getenv('TOKEN'))
