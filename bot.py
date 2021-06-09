@@ -1,7 +1,6 @@
 from discord import message
 from discord.ext import commands
 import os
-from discord.ext.commands.bot import AutoShardedBot
 import mysql.connector
 
 from dotenv import load_dotenv
@@ -104,7 +103,7 @@ async def on_message(message):
             # if its the end
             elif message.content == 'done':
                 await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
-                bot.status = ['free']
+                bot.status = ['free']   
                 bot.num_gifs = 0
 
 @bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs [Aliases : lc , list]")
@@ -115,8 +114,8 @@ async def list(ctx):
     msg = ''
     if len(data) == 0 :
         msg = 'You have no combogifs.'
-    for i in data:
-        msg += f"- {i[0]} \n"
+    for i in range(len(data)):
+        msg += f"**{i+1}** {data[i][0]} \n"
 
     await ctx.send(msg)
 
@@ -138,5 +137,6 @@ async def delete(ctx,*,arg):
         await ctx.send(f"There are no combogifs named `{name}`")
 
 # --------------- END OF COMBOGIF COMMANDS -------------- #
+
 
 bot.run(os.getenv('TOKEN'))
