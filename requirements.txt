@@ -1,5 +1,5 @@
 discord.py
-discord.py[voice]
+PyNaCl
 mysql-connector-python
 python-dotenv
 gTTS
