@@ -63,7 +63,7 @@ async def makecombo(ctx, *, arg):
 @bot.command(name="send",aliases=['s'],help="Used to send combogif [Aliases : s]")
 async def send(ctx, *, arg):
     at_pos = arg.find('@')
-    if at_pos != '-1':
+    if at_pos != -1:
         combo_name = arg[:at_pos-1].strip()
         tags = arg[at_pos-1:]
     else:
