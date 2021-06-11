@@ -62,7 +62,14 @@ async def makecombo(ctx, *, arg):
 
 @bot.command(name="send",aliases=['s'],help="Used to send combogif [Aliases : s]")
 async def send(ctx, *, arg):
-    combo_name = arg
+    at_pos = arg.find('@')
+    if at_pos != '-1':
+        combo_name = arg[:at_pos-1].strip()
+        tags = arg[at_pos-1:]
+    else:
+        combo_name = arg
+        tags = ''
+
     server_id = ctx.guild.id
     cur.execute(f'select gif_link from t{server_id} where gif_name = "{combo_name}" and user_id = "{ctx.author.id}"')
     data = cur.fetchall()
@@ -70,7 +77,7 @@ async def send(ctx, *, arg):
         await ctx.send(f'There is no combogif called `{combo_name}`')
     else:
         await ctx.message.delete()
-        await ctx.send(f'<@{ctx.author.id}> sent ->')
+        await ctx.send(f'<@{ctx.author.id}> sent -> {tags}')
         for i in data:
             await ctx.send(i[0])
 
@@ -136,6 +143,5 @@ async def delete(ctx,*,arg):
         await ctx.send(f"There are no combogifs named `{name}`")
 
 # --------------- END OF COMBOGIF COMMANDS -------------- #
-
 
 bot.run(os.getenv('TOKEN'))
