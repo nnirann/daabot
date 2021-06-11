@@ -1,7 +1,9 @@
 from discord import message
 from discord.ext import commands
 import os
+from gtts import gTTS
 import mysql.connector
+import asyncio
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -144,4 +146,44 @@ async def delete(ctx,*,arg):
 
 # --------------- END OF COMBOGIF COMMANDS -------------- #
 
+
+# --------------- START OF TTS COMMANDS -------------- #
+
+@bot.command(name='say',help="Says the text in the voice channel you are connected to.",rest_is_raw=True)
+async def tts(ctx,*,arg):
+    if not arg:
+        await ctx.send('Give text after `;say`')
+        return
+
+    if bot.status == ['tts']:
+        await ctx.send('`say` command is being used. Please wait.')
+        return
+    
+    if not ctx.author.voice:
+        await ctx.send('You have to be in a voice channel to use this command.')
+        return 
+    
+    channel = ctx.author.voice.channel.name
+    
+    speech = gTTS(text=arg)
+    speech.save("text.mp3")
+    
+    vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
+    await vc.connect()
+    
+    await asyncio.sleep(1)
+
+    voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
+    voice.play(discord.FFmpegPCMAudio("text.mp3"))
+    bot.status = ['tts']
+
+    while voice.is_playing():
+        await asyncio.sleep(0.1)
+    await voice.disconnect()
+   
+    bot.status = ['free']
+
+
+
+# --------------- END OF TTS COMMANDS -------------- #
 bot.run(os.getenv('TOKEN'))
