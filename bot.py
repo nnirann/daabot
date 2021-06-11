@@ -129,6 +129,34 @@ async def list(ctx):
     await ctx.send(msg)
 
 
+@bot.command(name="renamecombo",aliases=["rc"],help="Rename combo gif. Syntax: `;renamecombo <old_name> = <new_name>`",rest_is_raw=True)
+async def rename(ctx,*,arg):
+    if not arg:
+        await ctx.send('Give arguments after `;renamecombo`')
+        return
+    
+    if arg.find('=') == -1: 
+        await ctx.send('Give `<old name of combo> = <new name of combo>` to rename')
+        return
+    
+    splt = arg.split('=')
+    if len(splt) != 2:
+        await ctx.send('You need to give both old name and new name for the combo.')
+        return
+
+    old_name,new_name = splt[0].strip() , splt[1].strip()
+        
+    server_id = ctx.guild.id
+ 
+    cur.execute(f"select exists(select * from t{server_id} where user_id = '{ctx.message.author.id}' and gif_name = '{old_name}')")
+    if cur.fetchall()[0][0] == 1:
+        cur.execute(f'update t{server_id} set gif_name = "{new_name}" where gif_name = "{old_name}" and user_id = "{ctx.message.author.id}"')
+        mydb.commit()
+        await ctx.send(f'Changed name of combogif from `{old_name}` to `{new_name}`')
+    else :
+        await ctx.send(f'Combogif {old_name} not found.')    
+
+
 @bot.command(name="deletecombo",aliases=['dc','delc'],help="Deletes combo gif [Aliases : dc , delc]",rest_is_raw=True)
 async def delete(ctx,*,arg):
     name = arg.strip()
