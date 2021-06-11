@@ -66,12 +66,11 @@ async def send(ctx, *, arg):
     server_id = ctx.guild.id
     cur.execute(f'select gif_link from t{server_id} where gif_name = "{combo_name}" and user_id = "{ctx.author.id}"')
     data = cur.fetchall()
-    await ctx.message.delete()
-    await ctx.send(f'<@{ctx.author.id}> sent ->')
     if len(data) == 0:
         await ctx.send(f'There is no combogif called `{combo_name}`')
-
     else:
+        await ctx.message.delete()
+        await ctx.send(f'<@{ctx.author.id}> sent ->')
         for i in data:
             await ctx.send(i[0])
 
