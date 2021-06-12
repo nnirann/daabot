@@ -9,10 +9,7 @@ import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
-help_command = commands.DefaultHelpCommand(
-    no_category = 'Commands'
-)
-
+help_command = commands.DefaultHelpCommand(no_category = 'Commands')
 bot = commands.Bot(command_prefix=';',help_command=help_command)
 
 bot.status = ['free']
@@ -26,10 +23,9 @@ async def on_ready():
 mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
 cur = mydb.cursor()
 
-# --------------- START OF COMBOGIF COMMANDS --------------- #
+# *** COMBOGIF COMMANDS *** 
 
-# initiated combogif command
-@bot.command(name='makecombo',aliases=['mc','combo'],help="Used to create a combogif [Aliases : mc , combo]",rest_is_raw=True)
+@bot.command(name='makecombo',aliases=['mc','combo'],help="Used to create a combogif [Aliases: mc,combo]",rest_is_raw=True)
 async def makecombo(ctx, *, arg):
     if not arg:
         await ctx.send('You need to give a name after `makecombo`')
@@ -46,9 +42,11 @@ async def makecombo(ctx, *, arg):
     try:
         cur.execute(f"select gif_name from t{server_id} where user_id = '{ctx.message.author.id}' and gif_name = '{bot.phrase}'")
         data = cur.fetchall()
+        
         if len(data) != 0:
             await ctx.send(f"There already exists {len(data)} gif(s) associated with that name. If you want to add to that combogif, send the gifs and then send `done`. Else send `done` now")
             bot.num_gifs = len(data)
+        
         else:    
             await ctx.send(f"Send gif(s) you want to combine for `{bot.phrase}` or send `done` when done")
     
@@ -63,12 +61,13 @@ async def makecombo(ctx, *, arg):
         cur.execute(f'create table t{server_id} (id int auto_increment primary key, user_id varchar(50), gif_name varchar(50), gif_link varchar(200))')
 
 
-@bot.command(name="send",aliases=['s'],help="Used to send combogif [Aliases : s]")
+@bot.command(name="send",aliases=['s'],help="Used to send combogif [Aliases: s]")
 async def send(ctx, *, arg):
     at_pos = arg.find('@')
     if at_pos != -1:
         combo_name = arg[:at_pos-1].strip()
         tags = arg[at_pos-1:]
+
     else:
         combo_name = arg
         tags = ''
@@ -76,8 +75,10 @@ async def send(ctx, *, arg):
     server_id = ctx.guild.id
     cur.execute(f'select gif_link from t{server_id} where gif_name = "{combo_name}" and user_id = "{ctx.author.id}"')
     data = cur.fetchall()
+
     if len(data) == 0:
         await ctx.send(f'There is no combogif called `{combo_name}`')
+
     else:
         await ctx.message.delete()
         await ctx.send(f'<@{ctx.author.id}> sent -> {tags}')
@@ -114,6 +115,7 @@ async def on_message(message):
                 await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
                 bot.status = ['free']   
                 bot.num_gifs = 0
+
 
 @bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs [Aliases : lc , list]")
 async def list(ctx):
@@ -173,10 +175,8 @@ async def delete(ctx,*,arg):
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
 
-# --------------- END OF COMBOGIF COMMANDS -------------- #
 
-
-# --------------- START OF TTS COMMANDS -------------- #
+# *** TTS COMMANDS ***
 
 @bot.command(name='say',help="Says the text in the voice channel you are connected to.",rest_is_raw=True)
 async def tts(ctx,*,arg):
@@ -213,6 +213,4 @@ async def tts(ctx,*,arg):
     bot.status = ['free']
 
 
-
-# --------------- END OF TTS COMMANDS -------------- #
 bot.run(os.getenv('TOKEN'))
