@@ -9,8 +9,7 @@ import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
-help_command = commands.DefaultHelpCommand(no_category = 'Commands')
-bot = commands.Bot(command_prefix=';',help_command=help_command)
+bot = commands.Bot(command_prefix=';',help_command=None)
 
 bot.status = ['free']
 bot.num_gifs = 0
@@ -23,9 +22,44 @@ async def on_ready():
 mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
 cur = mydb.cursor()
 
+# *** HELP COMMAND ***
+
+@bot.command(name='help')
+async def help(ctx):
+    embed = discord.Embed(
+        title = "HELP",
+        description = "Commands for daa bot. Use `;help <command>` for detailed help.",
+        color = 0x00ffff,
+    )
+    
+    embed.set_thumbnail(url="https://cdn.discordapp.com/app-icons/850273933551075338/7114885a6d030442c21e3ae16afe84d5.png")    
+
+    embed.add_field(
+        name = "COMBOGIF COMMANDS",
+        value = """
+            `makecombo` : Used to **make combo gifs**. Aliases: `mc` , `combo`
+            `sendcombo` : Used to **send combo gifs**. Aliases : `s`
+            `listcombo` : Used to **list combo gifs**. Aliases : `lc` , `list`
+            `renamecombo` : Used to **rename combo gifs**. Aliases : `rc`
+            `deletecombo` : Used to **delete combo gifs**. Aliases : `dc` , `delc`
+        """,
+        inline = False
+    )
+
+    embed.add_field(
+        name = "TEXT-TO-SPEECH (TTS) COMMANDS",
+        value = """
+            `say` : **Says** the text in the **voice channel** you are connected to.
+        """,
+        inline = False
+    )
+
+    await ctx.send(embed=embed)
+
+
 # *** COMBOGIF COMMANDS *** 
 
-@bot.command(name='makecombo',aliases=['mc','combo'],help="Used to create a combogif [Aliases: mc,combo]",rest_is_raw=True)
+@bot.command(name='makecombo',aliases=['mc','combo'],help="Used to make combo gifs\n Syntax: makecombo <combo name>",rest_is_raw=True)
 async def makecombo(ctx, *, arg):
     if not arg:
         await ctx.send('You need to give a name after `makecombo`')
@@ -61,7 +95,7 @@ async def makecombo(ctx, *, arg):
         cur.execute(f'create table t{server_id} (id int auto_increment primary key, user_id varchar(50), gif_name varchar(50), gif_link varchar(200))')
 
 
-@bot.command(name="send",aliases=['s'],help="Used to send combogif [Aliases: s]")
+@bot.command(name="sendcombo",aliases=['s','send'],help="Used to send combogif \nSyntax: sendcombo <combo name>")
 async def send(ctx, *, arg):
     at_pos = arg.find('@')
     if at_pos != -1:
@@ -117,7 +151,7 @@ async def on_message(message):
                 bot.num_gifs = 0
 
 
-@bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs [Aliases : lc , list]")
+@bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs\nSyntax: listcombo")
 async def list(ctx):
     server_id = ctx.guild.id
     cur.execute(f"select distinct gif_name from t{server_id} where user_id = '{ctx.message.author.id}'")
@@ -131,7 +165,7 @@ async def list(ctx):
     await ctx.send(msg)
 
 
-@bot.command(name="renamecombo",aliases=["rc"],help="Rename combo gif. Syntax: `;renamecombo <old_name> = <new_name>`",rest_is_raw=True)
+@bot.command(name="renamecombo",aliases=["rc"],help="Rename combo gif. \nSyntax: `;renamecombo <old_name> = <new_name>`",rest_is_raw=True)
 async def rename(ctx,*,arg):
     if not arg:
         await ctx.send('Give arguments after `;renamecombo`')
@@ -159,7 +193,7 @@ async def rename(ctx,*,arg):
         await ctx.send(f'Combogif {old_name} not found.')    
 
 
-@bot.command(name="deletecombo",aliases=['dc','delc'],help="Deletes combo gif [Aliases : dc , delc]",rest_is_raw=True)
+@bot.command(name="deletecombo",aliases=['dc','delc'],help="Deletes combo gif\nSyntax: deletecombo <combo gif name>",rest_is_raw=True)
 async def delete(ctx,*,arg):
     name = arg.strip()
     if not name:
@@ -178,7 +212,7 @@ async def delete(ctx,*,arg):
 
 # *** TTS COMMANDS ***
 
-@bot.command(name='say',help="Says the text in the voice channel you are connected to.",rest_is_raw=True)
+@bot.command(name='say',help="Says the text in the voice channel you are connected to.\nSyntax: `;say <text>`",rest_is_raw=True)
 async def tts(ctx,*,arg):
     if not arg:
         await ctx.send('Give text after `;say`')
