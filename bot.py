@@ -168,6 +168,62 @@ async def delete(ctx,*,arg):
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
 
+# *** TTS ***
+@bot.command(name="say",rest_is_raw=True)
+async def say(ctx,*,text): 
+    #if ;say is being used
+    if bot.status[0] == "say":
+        await ctx.send(f"`;say` is being used by <@{bot.status[1]}>. Please wait.")    
+        return
+
+    # If no text is given
+    if not text:
+        await ctx.send("> Give **text** to say after `;say`")
+        return
+    
+    # This checks if user is connected a voice channel
+    if not ctx.author.voice:
+        await ctx.send("You have to be in a **voice channel** to use `;say`")
+        return
+    
+    vc_user_connected = ctx.author.voice.channel
+    
+    try:
+      vclient = await vc_user_connected.connect(timeout=2.5) 
+    
+    # This exception is raised when bot is already connected to a voice channel
+    except discord.errors.ClientException:
+      if bot.voice_clients[0].channel != vc_user_connected:
+        await bot.voice_clients[0].disconnect()
+        
+        # Again try block because the voice channel to be connected could be locked
+        try:
+          vclient = await vc_user_connected.connect(timeout=2.5)
+        
+        except asyncio.TimeoutError:
+          await ctx.send("Could not connect to the **voice channel**")
+          return
+ 
+    # This exception is usually raised when the voice channel is locked
+    except asyncio.TimeoutError:
+      await ctx.send("Could not connect to the **voice channel**")
+      return
+      
+    bot.status = ["say",ctx.author.id]
+    
+    # Using TTS and creating .mp3 file 
+    speech = gTTS(text=text,lang="en",tld="co.uk")
+    speech.save("text.mp3")
+
+    # Plays the text.mp3 file
+    vclient.play(discord.FFmpegPCMAudio("text.mp3"))
+    
+    # Checking when vc finishes playing and disconnecting 
+    while vclient.is_playing(): await asyncio.sleep(0.1)
+    await vclient.disconnect()
+
+    bot.status = ["free"]
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
@@ -197,5 +253,7 @@ async def on_message(message):
                 await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
                 bot.status = ['free']   
                 bot.num_gifs = 0
+
+
 
 bot.run(os.getenv('TOKEN'))
