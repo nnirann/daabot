@@ -13,7 +13,6 @@ bot = commands.Bot(command_prefix=';',help_command=None)
 bot.status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
-bot.convostatus = ['off']
 
 @bot.event
 async def on_ready():
@@ -46,15 +45,7 @@ async def help(ctx):
         inline = False
     )
 
-    embed.add_field(
-        name = "TEXT-TO-SPEECH (TTS) COMMANDS",
-        value = """
-            `say` : **Says** the text in the **voice channel** you are connected to.
-        """,
-        inline = False
-    )
-
-    await ctx.send(embed=embed)
+   await ctx.send(embed=embed)
 
 
 # *** COMBOGIF COMMANDS *** 
@@ -206,86 +197,5 @@ async def on_message(message):
                 await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
                 bot.status = ['free']   
                 bot.num_gifs = 0
-
-    # if user is sending msg in TTS Convo
-    if bot.convostatus[0] == "convo":
-        if bot.convostatus[1] == message.author.id and not message.content.startswith(';'):
-            if bot.status == ['tts']:
-                await message.channel.send('A msg is being said. Please wait.')
-                return
-            
-            bot.status = ['tts']  
-            being_said_msg = await message.channel.send('*Your message is being said.*') 
-            speech = gTTS(text=message.content)
-            speech.save("text.mp3")
-             
-            voice = discord.utils.get(bot.voice_clients,guild=message.guild)
-            voice.play(discord.FFmpegPCMAudio("text.mp3"))
-
-            while voice.is_playing():
-                await asyncio.sleep(0.1)
-            
-            await being_said_msg.delete()
-            bot.status = ['free']            
-            
-     
-# *** TTS COMMANDS ***
-
-@bot.command(name='say',help="Says the text in the voice channel you are connected to.\nSyntax: `;say <text>`",rest_is_raw=True)
-async def say(ctx,*,arg):
-    if not arg:
-        await ctx.send('Give text after `;say`')
-    
-    elif bot.status == ['tts']:
-        await ctx.send('`say` command is being used. Please wait.')
-
-    elif bot.convostatus == ['convo']:
-        await ctx.send('`convo` command is being used. Please wait until it has been stopped.')
-    
-    elif not ctx.author.voice:
-        await ctx.send('You have to be in a voice channel to use this command.')
-    
-    else: 
-        channel = ctx.author.voice.channel.name
-        
-        speech = gTTS(text=arg,lang="en",tld="co.uk")
-        speech.save("text.mp3")
-        
-        vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
-        await vc.connect()
-        
-        await asyncio.sleep(1)
-
-        voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
-        voice.play(discord.FFmpegPCMAudio("text.mp3"))
-        bot.status = ['tts']
-
-        while voice.is_playing():
-            await asyncio.sleep(0.1)
-        await voice.disconnect()
-       
-        bot.status = ['free']
-
-
-@bot.command(name="convo")
-async def convo(ctx):
-    if bot.convostatus[0] != "convo":
-        if not ctx.author.voice:
-            await ctx.send('You have to be in a voice channel to use this command.')
-            return 
-        
-        channel = ctx.author.voice.channel.name
-        vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
-        await vc.connect() 
-        await ctx.send(f'Convo mode started for <@{ctx.message.author.id}>.\nAll messages sent by you will be said alound in voice channel {channel}. Stop convo mode by sending `;convo` once more.')
-        bot.convostatus = ["convo",ctx.message.author.id]
-    else:
-        if ctx.message.author.id != bot.convostatus[1]:
-            await ctx.send(f'Convo mode is being used by <@{bot.convostatus[1]}>. Please wait.')
-        else:
-            voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
-            await voice.disconnect()
-            await ctx.send('Convo mode stopped.')
-
 
 bot.run(os.getenv('TOKEN'))
