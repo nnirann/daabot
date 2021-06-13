@@ -44,8 +44,8 @@ async def help(ctx):
         """,
         inline = False
     )
-
-   await ctx.send(embed=embed)
+    
+    await ctx.send(embed=embed)
 
 
 # *** COMBOGIF COMMANDS *** 
