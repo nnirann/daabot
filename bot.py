@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 bot = commands.Bot(command_prefix=';',help_command=None)
-
 bot.status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
+bot.convostatus = ['off']
 
 @bot.event
 async def on_ready():
@@ -119,38 +119,6 @@ async def send(ctx, *, arg):
         for i in data:
             await ctx.send(i[0])
 
-
-@bot.event
-async def on_message(message):
-    await bot.process_commands(message)
-
-    if message.author == bot.user:
-        return
-
-    # if user is sending the gifs for making combo
-    if 'makecombo' == bot.status[0]:
-        # confirming same user initiated the sequence
-        if message.author.id == bot.status[1]:
-
-            # if it's a gif link
-            if message.content.startswith('https://giphy.com/gifs/') or message.content.startswith('https://tenor.com/view/'):
-                if bot.num_gifs == 5:
-                    await message.channel.send('You can only have maximum 5 gifs in one combo.')
-                    return
-                else:
-                    bot.num_gifs += 1
-                    server_id = message.guild.id
-                    # adding the link to the table
-                    cur.execute(f"insert into t{server_id} (user_id,gif_name,gif_link) values ('{message.author.id}','{bot.phrase}','{message.content}')")
-                    mydb.commit()
-
-            # if its the end
-            elif message.content == 'done':
-                await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
-                bot.status = ['free']   
-                bot.num_gifs = 0
-
-
 @bot.command(name="listcombo",aliases=['lc','list'],help="Lists your combo gifs\nSyntax: listcombo")
 async def list(ctx):
     server_id = ctx.guild.id
@@ -209,42 +177,115 @@ async def delete(ctx,*,arg):
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
 
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
 
+    if message.author == bot.user:
+        return
+
+    # if user is sending the gifs for making combo
+    if bot.status[0] == "makecombo":
+        # confirming same user initiated the sequence
+        if message.author.id == bot.status[1]:
+
+            # if it's a gif link
+            if message.content.startswith('https://giphy.com/gifs/') or message.content.startswith('https://tenor.com/view/'):
+                if bot.num_gifs == 5:
+                    await message.channel.send('You can only have maximum 5 gifs in one combo.')
+                    return
+                else:
+                    bot.num_gifs += 1
+                    server_id = message.guild.id
+                    # adding the link to the table
+                    cur.execute(f"insert into t{server_id} (user_id,gif_name,gif_link) values ('{message.author.id}','{bot.phrase}','{message.content}')")
+                    mydb.commit()
+
+            # if its the end
+            elif message.content == 'done':
+                await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
+                bot.status = ['free']   
+                bot.num_gifs = 0
+
+    # if user is sending msg in TTS Convo
+    if bot.convostatus[0] == "convo":
+        if bot.convostatus[1] == message.author.id and not message.content.startswith(';'):
+            if bot.status == ['tts']:
+                await message.channel.send('A msg is being said. Please wait.')
+                return
+            
+            bot.status = ['tts']  
+            being_said_msg = await message.channel.send('*Your message is being said.*') 
+            speech = gTTS(text=message.content)
+            speech.save("text.mp3")
+             
+            voice = discord.utils.get(bot.voice_clients,guild=message.guild)
+            voice.play(discord.FFmpegPCMAudio("text.mp3"))
+
+            while voice.is_playing():
+                await asyncio.sleep(0.1)
+            
+            await being_said_msg.delete()
+            bot.status = ['free']            
+            
+     
 # *** TTS COMMANDS ***
 
 @bot.command(name='say',help="Says the text in the voice channel you are connected to.\nSyntax: `;say <text>`",rest_is_raw=True)
-async def tts(ctx,*,arg):
+async def say(ctx,*,arg):
     if not arg:
         await ctx.send('Give text after `;say`')
-        return
-
-    if bot.status == ['tts']:
+    
+    elif bot.status == ['tts']:
         await ctx.send('`say` command is being used. Please wait.')
-        return
+
+    elif bot.convostatus == ['convo']:
+        await ctx.send('`convo` command is being used. Please wait until it has been stopped.')
     
-    if not ctx.author.voice:
+    elif not ctx.author.voice:
         await ctx.send('You have to be in a voice channel to use this command.')
-        return 
     
-    channel = ctx.author.voice.channel.name
-    
-    speech = gTTS(text=arg)
-    speech.save("text.mp3")
-    
-    vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
-    await vc.connect()
-    
-    await asyncio.sleep(1)
+    else: 
+        channel = ctx.author.voice.channel.name
+        
+        speech = gTTS(text=arg,lang="en",tld="co.uk")
+        speech.save("text.mp3")
+        
+        vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
+        await vc.connect()
+        
+        await asyncio.sleep(1)
 
-    voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
-    voice.play(discord.FFmpegPCMAudio("text.mp3"))
-    bot.status = ['tts']
+        voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
+        voice.play(discord.FFmpegPCMAudio("text.mp3"))
+        bot.status = ['tts']
 
-    while voice.is_playing():
-        await asyncio.sleep(0.1)
-    await voice.disconnect()
-   
-    bot.status = ['free']
+        while voice.is_playing():
+            await asyncio.sleep(0.1)
+        await voice.disconnect()
+       
+        bot.status = ['free']
+
+
+@bot.command(name="convo")
+async def convo(ctx):
+    if bot.convostatus[0] != "convo":
+        if not ctx.author.voice:
+            await ctx.send('You have to be in a voice channel to use this command.')
+            return 
+        
+        channel = ctx.author.voice.channel.name
+        vc = discord.utils.get(ctx.guild.voice_channels,name=channel)
+        await vc.connect() 
+        await ctx.send(f'Convo mode started for <@{ctx.message.author.id}>.\nAll messages sent by you will be said alound in voice channel {channel}. Stop convo mode by sending `;convo` once more.')
+        bot.convostatus = ["convo",ctx.message.author.id]
+    else:
+        if ctx.message.author.id != bot.convostatus[1]:
+            await ctx.send(f'Convo mode is being used by <@{bot.convostatus[1]}>. Please wait.')
+        else:
+            voice = discord.utils.get(bot.voice_clients,guild=ctx.guild)
+            await voice.disconnect()
+            await ctx.send('Convo mode stopped.')
 
 
 bot.run(os.getenv('TOKEN'))
