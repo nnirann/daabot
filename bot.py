@@ -18,8 +18,10 @@ bot.phrase = ''
 async def on_ready():
     print(f'We have logged in as {bot.user.name}')
 
+"""
 mydb = mysql.connector.connect(host='sql6.freemysqlhosting.net', user='sql6417723', password=os.getenv('sqlpass') , database='sql6417723')
 cur = mydb.cursor()
+"""
 
 # *** HELP COMMAND ***
 
@@ -47,7 +49,7 @@ async def help(ctx):
     
     await ctx.send(embed=embed)
 
-
+"""
 # *** COMBOGIF COMMANDS *** 
 
 @bot.command(name='makecombo',aliases=['mc','combo'],help="Used to make combo gifs\n Syntax: makecombo <combo name>",rest_is_raw=True)
@@ -167,6 +169,7 @@ async def delete(ctx,*,arg):
         await ctx.send(f"Combogif `{name}` was deleted.")
     else:
         await ctx.send(f"There are no combogifs named `{name}`")
+"""
 
 # *** TTS ***
 @bot.command(name="say",rest_is_raw=True)
@@ -224,6 +227,7 @@ async def say(ctx,*,text):
 
     bot.status = ["free"]
 
+"""
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
@@ -254,6 +258,6 @@ async def on_message(message):
                 bot.status = ['free']   
                 bot.num_gifs = 0
 
-
+"""
 
 bot.run(os.getenv('TOKEN'))
