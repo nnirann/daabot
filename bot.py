@@ -227,7 +227,6 @@ async def say(ctx,*,text):
 
     bot.status = ["free"]
 
-"""
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
@@ -235,6 +234,11 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
+    if message.author.id == 270904126974590976:
+        if message.endswith("I'm dad"):
+            await message.delete()
+
+    """
     # if user is sending the gifs for making combo
     if bot.status[0] == "makecombo":
         # confirming same user initiated the sequence
