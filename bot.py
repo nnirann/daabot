@@ -235,7 +235,7 @@ async def on_message(message):
         return
 
     if message.author.id == 270904126974590976:
-        if message.endswith("I'm dad"):
+        if message.content.endswith("I'm dad"):
             await message.delete()
 
     """
