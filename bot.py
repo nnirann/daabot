@@ -10,7 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 bot = commands.Bot(command_prefix=';',help_command=None)
-bot.status = ['free']
+bot.say_status = ['free']
+bot.dl_status = ['free']
+bot.dl_queue = []
 bot.num_gifs = 0
 bot.phrase = ''
 
@@ -58,7 +60,7 @@ async def makecombo(ctx, *, arg):
         await ctx.send('You need to give a name after `makecombo`')
         return
 
-    if bot.status[0] == 'makecombo':
+    if bot.say_status[0] == 'makecombo':
         await ctx.send('`combogif` is being used now. Please wait.')
         return
 
@@ -80,7 +82,7 @@ async def makecombo(ctx, *, arg):
     except mysql.connector.errors.ProgrammingError: # error raised when no record of that user is found
         await ctx.send(f"Send gif(s) you want to combine for `{bot.phrase}` or send `done` when done")
 
-    bot.status = ['makecombo', ctx.message.author.id] 
+    bot.say_status = ['makecombo', ctx.message.author.id] 
 
     # checking table of that server exists in the db
     cur.execute('show tables')
@@ -176,8 +178,8 @@ async def delete(ctx,*,arg):
 async def say(ctx,*,text): 
     print("SAY")
     #if ;say is being used
-    if bot.status[0] == "say":
-        await ctx.send(f"`;say` is being used by <@{bot.status[1]}>. Please wait.")    
+    if bot.say_status[0] == "say":
+        await ctx.send(f"`;say` is being used by <@{bot.say_status[1]}>. Please wait.")    
         return
 
     # If no text is given
@@ -213,7 +215,7 @@ async def say(ctx,*,text):
       await ctx.send("Could not connect to the **voice channel**")
       return
       
-    bot.status = ["say",ctx.author.id]
+    bot.say_status = ["say",ctx.author.id]
     
     # Using TTS and creating .mp3 file 
     speech = gTTS(text=text,lang="en",tld="co.uk")
@@ -226,18 +228,24 @@ async def say(ctx,*,text):
     while vclient.is_playing(): await asyncio.sleep(0.1)
     await vclient.disconnect()
 
-    bot.status = ["free"]
+    bot.say_status = ["free"]
 
 # *** SONG DOWNLOAD (ONLY RYTHM PLAYING SONGS) ***
 
-async def download_song(ctx,link):
+async def download_song():
+    ctx,link = bot.dl_queue[0]
+    bot.dl_status = ["dl"]
     await ctx.send(f"Download started <@{ctx.message.author.id}>")
     stream = os.popen(f"spotdl {link}")
     output = stream.read()
     file_name = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"][0]
     await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
     os.remove(file_name)
+    bot.dl_queue.pop(0)
+    if len(bot.dl_queue):
+        await download_song()
 
+    bot.dl_status = ["free"]
 
 @bot.command(name="download",aliases=["dl"],rest_is_raw=True)
 async def download(ctx,*,link): 
@@ -245,8 +253,16 @@ async def download(ctx,*,link):
         await ctx.send("Right now you need to give spotify link to the song to download. Feature to download currently playing song is in development.")
         return
     
-    if "track" not in link: await ctx.send("Only downloading songs is supported now")
-    else: await download_song(ctx,link)
+    if "/album/" in link or "/playlist/" in link: 
+        await ctx.send("Only downloading songs is supported now")
+    else: 
+        if link in [l[1] for l in bot.dl_queue]: 
+            await ctx.send("This song is already in the queue to be downloaded. Please wait.")
+        if len(bot.dl_queue) != 0:
+            await ctx.send("Your song has been added to the queue to be downloaded.")
+        bot.dl_queue.append([ctx,link])
+        if bot.dl_status[0] == "free":
+            await download_song()
 
 
 @bot.event
@@ -263,9 +279,9 @@ async def on_message(message):
 
     """
     # if user is sending the gifs for making combo
-    if bot.status[0] == "makecombo":
+    if bot.say_status[0] == "makecombo":
         # confirming same user initiated the sequence
-        if message.author.id == bot.status[1]:
+        if message.author.id == bot.say_status[1]:
 
             # if it's a gif link
             if message.content.startswith('https://giphy.com/gifs/') or message.content.startswith('https://tenor.com/view/'):
@@ -282,7 +298,7 @@ async def on_message(message):
             # if its the end
             elif message.content == 'done':
                 await message.channel.send(f'Combined {bot.num_gifs} gif(s). Use `;send {bot.phrase}` for me to send this combo.')
-                bot.status = ['free']   
+                bot.say_status = ['free']   
                 bot.num_gifs = 0
 
 """
