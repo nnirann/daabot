@@ -236,7 +236,7 @@ async def download_song():
     ctx,link = bot.dl_queue[0]
     bot.dl_status = ["dl"]
     await ctx.send(f"Download started <@{ctx.message.author.id}>")
-    stream = os.popen(f"spotdl {link}")
+    stream = os.popen(f'spotdl "{link}"')
     output = stream.read()
     file_name = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"][0]
     await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
