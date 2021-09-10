@@ -272,6 +272,10 @@ async def download(ctx,*,link):
         if bot.dl_status[0] == "free":
             await download_song()
 
+@bot.command(name="dlq")
+async def dlq(ctx):
+    await ctx.send(bot.dl_queue)
+
 
 @bot.event
 async def on_message(message):
