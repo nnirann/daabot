@@ -174,6 +174,7 @@ async def delete(ctx,*,arg):
 # *** TTS ***
 @bot.command(name="say",rest_is_raw=True)
 async def say(ctx,*,text): 
+    print("SAY")
     #if ;say is being used
     if bot.status[0] == "say":
         await ctx.send(f"`;say` is being used by <@{bot.status[1]}>. Please wait.")    
@@ -227,6 +228,27 @@ async def say(ctx,*,text):
 
     bot.status = ["free"]
 
+# *** SONG DOWNLOAD (ONLY RYTHM PLAYING SONGS) ***
+
+async def download_song(ctx,link):
+    await ctx.send(f"Download started <@{ctx.message.author.id}>")
+    stream = os.popen(f"spotdl {link}")
+    output = stream.read()
+    file_name = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"][0]
+    await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
+    os.remove(file_name)
+
+
+@bot.command(name="download",aliases=["dl"],rest_is_raw=True)
+async def download(ctx,*,link): 
+    if not link:
+        await ctx.send("Right now you need to give spotify link to the song to download. Feature to download currently playing song is in development.")
+        return
+    
+    if "track" not in link: await ctx.send("Only downloading songs is supported now")
+    else: await download_song(ctx,link)
+
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
@@ -237,6 +259,7 @@ async def on_message(message):
     if message.author.id == 270904126974590976:
         if message.content.endswith("I'm dad"):
             await message.delete()
+
 
     """
     # if user is sending the gifs for making combo
