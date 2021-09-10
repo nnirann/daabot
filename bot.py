@@ -258,6 +258,7 @@ async def download(ctx,*,link):
     else: 
         if link in [l[1] for l in bot.dl_queue]: 
             await ctx.send("This song is already in the queue to be downloaded. Please wait.")
+            return
         if len(bot.dl_queue) != 0:
             await ctx.send("Your song has been added to the queue to be downloaded.")
         bot.dl_queue.append([ctx,link])
