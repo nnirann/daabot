@@ -241,6 +241,7 @@ async def download_song():
 
     mp3_file_names = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"]
     if mp3_file_names == []:
+        bot.dl_queue.pop(0)
         await ctx.send(f"There was an error in downloading this <@{ctx.message.author.id}>")
         return
 
