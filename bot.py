@@ -243,6 +243,7 @@ async def download_song():
     if mp3_file_names == []:
         bot.dl_queue.pop(0)
         await ctx.send(f"There was an error in downloading this <@{ctx.message.author.id}>")
+        bot.dl_status = ["free"]
         return
 
     file_name = mp3_file_names[0] 
