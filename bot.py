@@ -238,7 +238,13 @@ async def download_song():
     await ctx.send(f"Download started <@{ctx.message.author.id}>")
     stream = os.popen(f'spotdl "{link}"')
     output = stream.read()
-    file_name = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"][0]
+
+    mp3_file_names = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"]
+    if mp3_file_names == []:
+        await ctx.send(f"There was an error in downloading this <@{ctx.message.author.id}>")
+        return
+
+    file_name = mp3_file_names[0] 
     await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
     os.remove(file_name)
     bot.dl_queue.pop(0)
