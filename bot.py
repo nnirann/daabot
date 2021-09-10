@@ -12,7 +12,6 @@ load_dotenv()
 bot = commands.Bot(command_prefix=';',help_command=None)
 bot.say_status = ['free']
 bot.dl_status = ['free']
-bot.dl_queue = []
 bot.num_gifs = 0
 bot.phrase = ''
 
@@ -232,8 +231,7 @@ async def say(ctx,*,text):
 
 # *** SONG DOWNLOAD (ONLY RYTHM PLAYING SONGS) ***
 
-async def download_song():
-    ctx,link = bot.dl_queue[0]
+async def download_song(ctx,link):
     bot.dl_status = ["dl"]
     await ctx.send(f"Download started <@{ctx.message.author.id}>")
     stream = os.popen(f'spotdl "{link}"')
@@ -241,7 +239,6 @@ async def download_song():
 
     mp3_file_names = [x for x in os.listdir() if x.endswith(".mp3") and x != "text.mp3"]
     if mp3_file_names == []:
-        bot.dl_queue.pop(0)
         await ctx.send(f"There was an error in downloading this <@{ctx.message.author.id}>")
         bot.dl_status = ["free"]
         return
@@ -249,10 +246,6 @@ async def download_song():
     file_name = mp3_file_names[0] 
     await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
     os.remove(file_name)
-    bot.dl_queue.pop(0)
-    if len(bot.dl_queue):
-        await download_song()
-
     bot.dl_status = ["free"]
 
 @bot.command(name="download",aliases=["dl"],rest_is_raw=True)
@@ -264,19 +257,10 @@ async def download(ctx,*,link):
     if "/album/" in link or "/playlist/" in link: 
         await ctx.send("Only downloading songs is supported now")
     else: 
-        if link in [l[1] for l in bot.dl_queue]: 
-            await ctx.send("This song is already in the queue to be downloaded. Please wait.")
-            return
-        if len(bot.dl_queue) != 0:
-            await ctx.send("Your song has been added to the queue to be downloaded.")
-        bot.dl_queue.append([ctx,link])
         if bot.dl_status[0] == "free":
-            await download_song()
-
-@bot.command(name="dlq")
-async def dlq(ctx):
-    await ctx.send(bot.dl_queue)
-
+            await download_song(ctx,link)
+        else:
+            await ctx.send("Dl is being used now. Please wait.")
 
 @bot.event
 async def on_message(message):
