@@ -260,7 +260,13 @@ async def download(ctx,*,link):
         if bot.dl_status[0] == "free":
             await download_song(ctx,link)
         else:
-            await ctx.send("Dl is being used now. Please wait.")
+            await ctx.send(";dl is being used now. Please wait.")
+            
+@bot.command(name="dlr")
+async def dlr(ctx):
+    if ctx.message.author.id == 524200058686799903:
+        bot.dl_status = ["free"]
+        await ctx.send("RESETED")
 
 @bot.event
 async def on_message(message):
