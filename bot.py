@@ -230,7 +230,7 @@ async def say(ctx,*,text):
     bot.say_status = ["free"]
 
 # *** SONG DOWNLOAD (ONLY RYTHM PLAYING SONGS) ***
-
+"""
 async def download_song(ctx,link):
     bot.dl_status = ["dl"]
     await ctx.send(f"Download started <@{ctx.message.author.id}>")
@@ -267,7 +267,11 @@ async def dlr(ctx):
     if ctx.message.author.id == 524200058686799903:
         bot.dl_status = ["free"]
         await ctx.send("RESETED")
+"""
 
+@bot.command(name="download",aliases=["dl"],rest_is_raw=True)
+async def download(ctx,*,link):
+    await ctx.send("This command has been taken down. I aint got time to fix stuff rn sorry. Checkout https://github.com/spotDL/spotify-downloader for downloading songs. That was the backend of this command.")
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
