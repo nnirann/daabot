@@ -280,7 +280,7 @@ async def on_message(message):
         return
 
     if message.content == "edit":
-        message.edit("edited")
+        await message.edit(content="edited")
 
     if message.author.id == 270904126974590976:
         if message.content.endswith("I'm dad"):
