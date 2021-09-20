@@ -279,6 +279,9 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
+    if message.content == "edit":
+        message.edit("edited")
+
     if message.author.id == 270904126974590976:
         if message.content.endswith("I'm dad"):
             await message.delete()
