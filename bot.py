@@ -286,7 +286,7 @@ async def on_message(message):
         if message.content.startswith("https://tenor.com/") and "loki" in message.content:
             await message.delete()
         if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329":
-            await message.delete():w
+            await message.delete()
 
     """
     # if user is sending the gifs for making combo
