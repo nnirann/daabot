@@ -284,7 +284,7 @@ async def on_message(message):
             await message.delete()
     if message.author.id == 770165006766440468:
         if message.content.startswith("https://tenor.com/") and "loki" in message.content:
-           :w:w await message.delete()
+            await message.delete()
         if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329":
             await message.delete():w
 
