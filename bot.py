@@ -282,7 +282,11 @@ async def on_message(message):
     if message.author.id == 270904126974590976:
         if message.content.endswith("I'm dad"):
             await message.delete()
-
+    if message.author.id == 770165006766440468:
+        if message.content.startswith("https://tenor.com/") and "loki" in message.content:
+           :w:w await message.delete()
+        if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329":
+            await message.delete():w
 
     """
     # if user is sending the gifs for making combo
