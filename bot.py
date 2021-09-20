@@ -285,7 +285,7 @@ async def on_message(message):
     if message.author.id == 770165006766440468:
         if message.content.startswith("https://tenor.com/") and "loki" in message.content:
             await message.delete()
-        if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329" or "https://tenor.com/view/sad-cry-crying-tears-broken-gif-15062040":
+        if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329" or message.content == "https://tenor.com/view/sad-cry-crying-tears-broken-gif-15062040":
             await message.delete()
 
     """
