@@ -279,7 +279,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if message.author == 235148962103951360:
+    if message.author == 235148962103951360 or message.author == 338222603829510164:
         await message.delete()
 
     if message.content == "edit":
