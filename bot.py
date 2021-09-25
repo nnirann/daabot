@@ -334,20 +334,6 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if message.author == 235148962103951360 or message.author == 338222603829510164:
-        await message.delete()
-
-    if message.content == "edit":
-        await message.edit(content="edited")
-
-    if message.author.id == 270904126974590976:
-        if message.content.endswith("I'm dad"):
-            await message.delete()
-    if message.author.id == 770165006766440468:
-        if message.content.startswith("https://tenor.com/") and "loki" in message.content:
-            await message.delete()
-        if message.content == "https://tenor.com/view/crying-black-guy-meme-sad-gif-11746329" or message.content == "https://tenor.com/view/sad-cry-crying-tears-broken-gif-15062040":
-            await message.delete()
 
     """
     # if user is sending the gifs for making combo
