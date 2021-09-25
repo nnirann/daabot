@@ -305,9 +305,9 @@ async def play(ctx,*,term):
         value = value + "\nGive number of search result you want to play. Or send `cancel`"
     )
     
-    await ctx.send(embed=embed)
+    embed_sent = await ctx.send(embed=embed)
 
-    bot.play_status = ["search",ctx.author.id,[item["external_urls"]["spotify"] for item in results["tracks"]["items"]],ctx]
+    bot.play_status = ["search",ctx.author.id,[item["external_urls"]["spotify"] for item in results["tracks"]["items"]],embed_sent]
 
 
 
@@ -321,7 +321,7 @@ async def on_message(message):
                 index = int(message.content)-1
                 if index in range(len(bot.play_status[2])):
                     await message.channel.send(f"`.play {bot.play_status[2][index]}` - <@{bot.play_status[1]}>")
-                    await bot.play_status[3].message.delete()
+                    await bot.play_status[3].delete()
                     await message.delete()
                     bot.play_status = ["free"]
                 else:
