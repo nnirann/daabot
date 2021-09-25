@@ -9,8 +9,13 @@ import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
+
 bot = commands.Bot(command_prefix=';',help_command=None)
 bot.say_status = ['free']
+bot.play_status = ['free']
 bot.dl_status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
@@ -272,9 +277,57 @@ async def dlr(ctx):
 @bot.command(name="download",aliases=["dl"],rest_is_raw=True)
 async def download(ctx,*,link):
     await ctx.send("This command has been taken down. I aint got time to fix stuff rn sorry. Checkout https://github.com/spotDL/spotify-downloader for downloading songs. That was the backend of this command.")
+
+
+
+@bot.command(name="play",aliases=["p"],rest_is_raw=True)
+async def play(ctx,*,term):
+    if bot.play_status[0] == "search":
+        await ctx.send(f"This command is being used by <@{bot.play_status[1]}>. Please wait.")
+        return
+
+    if not term:
+        await ctx.send("Please give a search term.")
+        return
+    
+
+    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+
+    results = spotify.search(q=term)
+    value = ""
+    for x,item in enumerate(results["tracks"]["items"]):
+        value += f'{x+1}.\t`{item["name"]}` by `{", ".join([artist["name"] for artist in item["artists"]])}` \n'
+
+    embed = discord.Embed()
+
+    embed.add_field(
+        name = f"`{term.strip()}` - Search Results",
+        value = value + "\nGive number of search result you want to play. Or send `cancel`"
+    )
+    
+    await ctx.send(embed=embed)
+
+    bot.play_status = ["search",ctx.author.id,[item["external_urls"]["spotify"] for item in results["tracks"]["items"]]]
+
+
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
+    
+    if bot.play_status[0] == "search":
+        if bot.play_status[1] == message.author.id:
+            if message.content.isnumeric():
+                index = int(message.content)-1
+                if index in range(len(bot.play_status[2])):
+                    await message.channel.send(f".play {bot.play_status[2][index]}")
+                    bot.play_status = ["free"]
+                else:
+                    await message.channel.send("Please give a number in the search results")
+            elif message.content == "cancel":
+                await message.channel.send("Cancelled")
+                bot.play_status = ["free"]
+
 
     if message.author == bot.user:
         return
