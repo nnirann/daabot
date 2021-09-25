@@ -320,7 +320,7 @@ async def on_message(message):
             if message.content.isnumeric():
                 index = int(message.content)-1
                 if index in range(len(bot.play_status[2])):
-                    await message.channel.send(f"`{bot.play_status[2][index]}` - <@{bot.play_status[1]}>")
+                    await message.channel.send(f"`.play {bot.play_status[2][index]}` - <@{bot.play_status[1]}>")
                     bot.play_status = ["free"]
                 else:
                     await message.channel.send("Please give a number in the search results")
