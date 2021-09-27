@@ -20,6 +20,9 @@ bot.dl_status = ['free']
 bot.num_gifs = 0
 bot.phrase = ''
 
+bot.gossip_list = []
+
+
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user.name}')
@@ -314,6 +317,9 @@ async def play(ctx,*,term):
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
+
+    if message.content == "test":
+        await message.channel.send(os.getenv("gossiplist"))
     
     if bot.play_status[0] == "search":
         if bot.play_status[1] == message.author.id:
