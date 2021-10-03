@@ -1,0 +1,22 @@
+{
+  "name": "daabot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nnirann/daabot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nnirann/daabot/issues"
+  },
+  "homepage": "https://github.com/nnirann/daabot#readme",
+  "dependencies": {
+    "discord.js": "^13.1.0"
+  }
+}
