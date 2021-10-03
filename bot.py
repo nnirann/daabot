@@ -12,6 +12,9 @@ load_dotenv()
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+from cloudinary.uploader import upload
+
+import requests
 
 bot = commands.Bot(command_prefix=';',help_command=None)
 bot.say_status = ['free']
@@ -238,10 +241,10 @@ async def say(ctx,*,text):
     bot.say_status = ["free"]
 
 # *** SONG DOWNLOAD (ONLY RYTHM PLAYING SONGS) ***
-"""
+
 async def download_song(ctx,link):
     bot.dl_status = ["dl"]
-    await ctx.send(f"Download started <@{ctx.message.author.id}>")
+    og_msg = await ctx.send(f"Download started <@{ctx.message.author.id}>")
     stream = os.popen(f'spotdl "{link}"')
     output = stream.read()
 
@@ -252,7 +255,21 @@ async def download_song(ctx,link):
         return
 
     file_name = mp3_file_names[0] 
-    await ctx.send(f"Here you go <@{ctx.message.author.id}>",file=discord.File(file_name))
+    await og_msg.edit(content=f"Download finished. Generating URL")
+
+    url_to_get = f"https://res.cloudinary.com/daabot/video/upload/{file_name}".replace(" ","%20")
+    r = requests.get(url_to_get)
+    print(r)
+    if r.status_code == 404:
+        res = upload(file_name,resource_type='video',public_id=file_name[:-4])
+        embed=discord.Embed(title=file_name[:-4],description=f"[Download Link]({res['secure_url']})")
+    else:
+        embed=discord.Embed(title=file_name[:-4],description=f"[Download Link]({url_to_get})")
+        
+    await ctx.send(f"<@{ctx.message.author.id}>")
+    await ctx.send(embed=embed)
+        
+    await og_msg.delete()
     os.remove(file_name)
     bot.dl_status = ["free"]
 
@@ -269,19 +286,6 @@ async def download(ctx,*,link):
             await download_song(ctx,link)
         else:
             await ctx.send(";dl is being used now. Please wait.")
-            
-@bot.command(name="dlr")
-async def dlr(ctx):
-    if ctx.message.author.id == 524200058686799903:
-        bot.dl_status = ["free"]
-        await ctx.send("RESETED")
-"""
-
-@bot.command(name="download",aliases=["dl"],rest_is_raw=True)
-async def download(ctx,*,link):
-    await ctx.send("This command has been taken down. I aint got time to fix stuff rn sorry. Checkout https://github.com/spotDL/spotify-downloader for downloading songs. That was the backend of this command.")
-
-
 
 @bot.command(name="play",aliases=["p"],rest_is_raw=True)
 async def play(ctx,*,term):
