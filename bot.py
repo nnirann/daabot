@@ -322,8 +322,9 @@ async def play(ctx,*,term):
 async def on_message(message):
     await bot.process_commands(message)
 
-    if message.content == "test":
-        await message.channel.send(os.getenv("gossiplist"))
+    if message.content == "test" and message.author.id == 524200058686799903:
+        msgs = await ctx.channel.history(limit=5).flatten()
+        await bot.send_message(message.author,f"{msgs}")
     
     if bot.play_status[0] == "search":
         if bot.play_status[1] == message.author.id:
