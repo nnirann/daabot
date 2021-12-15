@@ -5,6 +5,7 @@ import os
 from gtts import gTTS
 import mysql.connector
 import asyncio
+from discord.ext import tasks
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -322,6 +323,18 @@ async def nick(ctx):
         await ctx.message.author.edit(nick="nir")
         await ctx.send("changed?")
 
+@tasks.loop(seconds=1.0)
+async def nick_loop():
+    server = bot.get_guild(772345603400531988)
+    member = server.get_member(524200058686799903)
+    if member.nick == "absolutely":
+        await member.edit(nick="amazing")
+    elif member.nick == "amazing":
+        await member.edit(nick="absolutely")
+
+@nick_loop.before_loop
+    async def before_nick_loop(self):
+        await bot.wait_until_ready()
 
 @bot.event
 async def on_message(message):
