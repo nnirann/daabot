@@ -326,7 +326,9 @@ async def nick(ctx):
 @tasks.loop(seconds=1.0)
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
+    print(server)
     member = server.get_member(524200058686799903)
+    print(member)
     print(member.nick)
     if member.nick == "absolutely":
         await member.edit(nick="amazing")
