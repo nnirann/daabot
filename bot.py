@@ -323,17 +323,15 @@ async def nick(ctx):
         await ctx.message.author.edit(nick="nir")
         await ctx.send("changed?")
 
+bot.nick_count = 0
+NICK = ["··i···","··am··","·dumb·"]
+
 @tasks.loop(seconds=1.0)
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
-    print(server)
     member = await server.fetch_member(524200058686799903)
-    print(member)
-    print(member.nick)
-    if member.nick == "absolutely":
-        await member.edit(nick="amazing")
-    elif member.nick == "amazing":
-        await member.edit(nick="absolutely")
+    await member.edit(nick=NICK[bot.nick_count])
+    if bot.nick_count == 2: bot.nick_count = 0
 
 @nick_loop.before_loop
 async def before_nick_loop():
