@@ -325,6 +325,7 @@ async def nick(ctx):
 
 
 
+
 bot.nick_count = 0
 nick_list = ["←",
 			"↖",
@@ -340,7 +341,7 @@ async def nick_loop():
     server = bot.get_guild(772345603400531988)
     member = await server.fetch_member(524200058686799903)
     await member.edit(nick=nick_list[bot.nick_count])
-    if bot.nick_count == 2: 
+    if bot.nick_count == len(nick_list) - 1: 
         bot.nick_count = 0
     else:
         bot.nick_count += 1
