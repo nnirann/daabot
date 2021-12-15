@@ -335,6 +335,7 @@ async def nick_loop():
 
 @nick_loop.before_loop
 async def before_nick_loop(self):
+    print("starting ... ")
     await bot.wait_until_ready()
 
 nick_loop.start()
