@@ -327,7 +327,8 @@ async def nick(ctx):
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
     print(server)
-    member = server.get_member(524200058686799903)
+    member = server.fetch_member(524200058686799903)
+    
     print(member)
     print(member.nick)
     if member.nick == "absolutely":
