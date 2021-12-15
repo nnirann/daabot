@@ -324,7 +324,7 @@ async def nick(ctx):
         await ctx.send("changed?")
 
 bot.nick_count = 0
-nick_list = ["·· i ···","·· am ··","· dumb ·"]
+nick_list = ["··i···","··am··","·dumb·"]
 
 @tasks.loop(seconds=1.0)
 async def nick_loop():
