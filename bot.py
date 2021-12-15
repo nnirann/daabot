@@ -333,6 +333,8 @@ async def nick_loop():
     await member.edit(nick=nick_list[bot.nick_count])
     if bot.nick_count == 2: 
         bot.nick_count = 0
+    else:
+        bot.nick_count += 1
     print("Changed nick")
 
 @nick_loop.before_loop
