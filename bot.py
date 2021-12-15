@@ -319,7 +319,7 @@ async def play(ctx,*,term):
 @bot.command(name="nick")
 async def nick(ctx):
     if ctx.message.author.id == 524200058686799903:
-        await discord.Member.edit(nick="nir")
+        await ctx.message.author.edit(nick="nir")
         await ctx.send("changed?")
 
 
