@@ -316,7 +316,7 @@ async def play(ctx,*,term):
 
     bot.play_status = ["search",ctx.author.id,[item["external_urls"]["spotify"] for item in results["tracks"]["items"]],embed_sent]
 
-@bot.command(name="nick",discord.Member)
+@bot.command(name="nick")
 async def nick(ctx):
     if ctx.message.author.id == 524200058686799903:
         await discord.Member.edit(nick="nir")
