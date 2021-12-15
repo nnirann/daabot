@@ -336,6 +336,8 @@ async def nick_loop():
 async def before_nick_loop(self):
     await bot.wait_until_ready()
 
+nick_loop.start()
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
