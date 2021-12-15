@@ -357,7 +357,7 @@ nick_list = ["▐⠂       ▌",
 			"▐ ⡀      ▌",
 			"▐⠠       ▌"]
 
-@tasks.loop(seconds=0.1)
+@tasks.loop(seconds=0.5)
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
     member = await server.fetch_member(524200058686799903)
