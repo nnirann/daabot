@@ -327,16 +327,9 @@ async def nick(ctx):
 
 
 bot.nick_count = 0
-nick_list = ["←",
-			"↖",
-			"↑",
-			"↗",
-			"→",
-			"↘",
-			"↓",
-			"↙"]
+nick_list = ["..... brain .....",".. damage .."]
 
-@tasks.loop(seconds=0.5)
+@tasks.loop(seconds=1)
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
     member = await server.fetch_member(524200058686799903)
