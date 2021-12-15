@@ -334,7 +334,7 @@ async def nick_loop():
         await member.edit(nick="absolutely")
 
 @nick_loop.before_loop
-async def before_nick_loop(self):
+async def before_nick_loop():
     print("starting ... ")
     await bot.wait_until_ready()
 
