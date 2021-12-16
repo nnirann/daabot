@@ -327,7 +327,7 @@ async def nick(ctx):
 
 
 bot.nick_count = 0
-nick_list = ["BRAIN","DAMAGE"]
+nick_list = ["deez","nuts"]
 
 @tasks.loop(seconds=1)
 async def nick_loop():
