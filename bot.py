@@ -317,17 +317,9 @@ async def play(ctx,*,term):
 
     bot.play_status = ["search",ctx.author.id,[item["external_urls"]["spotify"] for item in results["tracks"]["items"]],embed_sent]
 
-@bot.command(name="nick")
-async def nick(ctx):
-    if ctx.message.author.id == 524200058686799903:
-        await ctx.message.author.edit(nick="nir")
-        await ctx.send("changed?")
-
-
-
 
 bot.nick_count = 0
-nick_list = ["deez","nuts"]
+nick_list = [".deez.",".nuts."]
 
 @tasks.loop(seconds=1)
 async def nick_loop():
