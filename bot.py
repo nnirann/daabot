@@ -319,7 +319,7 @@ async def play(ctx,*,term):
 
 
 bot.nick_count = 0
-nick_list = [".deez.",".nuts."]
+nick_list = [". deez",". nuts"]
 
 @tasks.loop(seconds=1)
 async def nick_loop():
