@@ -288,6 +288,15 @@ async def download(ctx,*,link):
         else:
             await ctx.send(";dl is being used now. Please wait.")
 
+bot.mute = False
+@bot.command(name="mute")
+async def mute(ctx,*,arg):
+    if ctx.message.author.id == 524200058686799903:
+        if arg == "start":
+            bot.mute = True
+        elif arg == "stop":
+            bot.mute = False
+
 @bot.command(name="play",aliases=["p"],rest_is_raw=True)
 async def play(ctx,*,term):
     if bot.play_status[0] == "search":
@@ -357,6 +366,10 @@ async def on_message(message):
         msgs = await message.channel.history(limit=5).flatten()
         await message.channel.send(f"{msgs}")
     
+    if message.author.id == 771424779840389171:
+        if bot.mute:
+            await message.delete()
+
     if bot.play_status[0] == "search":
         if bot.play_status[1] == message.author.id:
             if message.content.isnumeric():
