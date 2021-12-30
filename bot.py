@@ -321,16 +321,29 @@ async def play(ctx,*,term):
 bot.nick_count = 0
 nick_list = [". deez",". nuts"]
 
+
+@tasks.loop(seconds=3)
+async def nick_creep():
+    server = bot.get_guild(772345603400531988)
+    member = await server.fetch_member(771424779840389171)
+    await member.edit(nick="creep")
+
+@nick_creep.before_loop
+async def before_nick_creep():
+    await bot.wait_until_ready()
+
+nick_creep.start()
+
 @tasks.loop(seconds=1)
 async def nick_loop():
     server = bot.get_guild(772345603400531988)
     member = await server.fetch_member(524200058686799903)
     await member.edit(nick=nick_list[bot.nick_count])
-    if bot.nick_count == len(nick_list) - 1: 
-        bot.nick_count = 0
-    else:
-        bot.nick_count += 1
-    print("Changed nick")
+    if bot.nick_count == len(nick_list) - 1: bot.nick_count = 0
+    else: bot.nick_count += 1
+
+    member2 = await server.fetch_member(771424779840389171)
+    await member.edit(nick="creep")
 
 @nick_loop.before_loop
 async def before_nick_loop():
