@@ -302,7 +302,7 @@ async def deletelistremove(ctx,*args):
     if ctx.message.author.id == 524200058686799903:
         if args[0] in bot.deletelist.keys():
             if args[1] in bot.deletelist[args[0]]:
-                bot.deletelist.remove(args[1])
+                bot.deletelist[args[0]].remove(args[1])
             
     
 
