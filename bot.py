@@ -363,10 +363,6 @@ nick_loop.start()
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-
-    if message.content == "test":
-        msgs = await message.channel.history(limit=5).flatten()
-        await message.channel.send(f"{msgs}")
     
     for id in bot.deletelist.keys():
         if int(id) == message.author.id:
