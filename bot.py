@@ -292,7 +292,11 @@ async def download(ctx,*,link):
 @bot.command(name="deletelist")
 async def deletelist(ctx,*args):
     if ctx.message.author.id == 524200058686799903:
-        bot.deletelist[args[0]].append(args[1])
+        if args[0] in bot.deletelist.keys():
+            bot.deletelist[args[0]].append(args[1])
+        else:
+            bot.deletelist[args[0]] = [args[1]]
+            
     
 
 @bot.command(name="play",aliases=["p"],rest_is_raw=True)
