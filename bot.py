@@ -289,20 +289,6 @@ async def download(ctx,*,link):
         else:
             await ctx.send(";dl is being used now. Please wait.")
 
-@bot.command(name="deletelist")
-async def deletelist(ctx,*args):
-    if ctx.message.author.id == 524200058686799903:
-        if args[0] in bot.deletelist.keys():
-            bot.deletelist[args[0]].append(args[1])
-        else:
-            bot.deletelist[args[0]] = [args[1]]
-
-@bot.command(name="deletelistremove")
-async def deletelistremove(ctx,*args):
-    if ctx.message.author.id == 524200058686799903:
-        if args[0] in bot.deletelist.keys():
-            if args[1] in bot.deletelist[args[0]]:
-                bot.deletelist[args[0]].remove(args[1])
             
     
 
@@ -370,12 +356,6 @@ nick_loop.start()
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    
-    for id in bot.deletelist.keys():
-        if int(id) == message.author.id:
-            for term in bot.deletelist[id]:
-                if term in message.content:
-                    await message.delete()
 
     if bot.play_status[0] == "search":
         if bot.play_status[1] == message.author.id:
