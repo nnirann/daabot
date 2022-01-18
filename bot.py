@@ -130,11 +130,12 @@ nick_loop.start()
 
 # ** NICK CHANGE **
 @bot.command(name="nick",rest_is_raw=True)
-async def nick(ctx,id: int,nick: str): 
+async def nick(ctx,userid: int,nick: str): 
+    await ctx.send(
     try:
         server = bot.get_guild(772345603400531988)
-        member = await server.fetch_member(524200058686799903)
-        await member.edit(nick=nick_list[bot.nick_count])
+        member = await server.fetch_member(userid)
+        await member.edit(nick=nick)
     except Exception as e:
         print(e)
 
