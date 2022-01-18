@@ -131,7 +131,6 @@ nick_loop.start()
 # ** NICK CHANGE **
 @bot.command(name="nick",rest_is_raw=True)
 async def nick(ctx,userid: int,nick: str): 
-    await ctx.send(
     try:
         server = bot.get_guild(772345603400531988)
         member = await server.fetch_member(userid)
