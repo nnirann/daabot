@@ -131,7 +131,6 @@ nick_loop.start()
 # ** NICK CHANGE **
 @bot.command(name="nick",rest_is_raw=True)
 async def nick(ctx,nick: str): 
-    await ctx.message.delete()
     server = bot.get_guild(772345603400531988)
     members = server.members
     for member in members:
