@@ -10,7 +10,7 @@ load_dotenv()
 import requests
 import csv
 
-intents = discord.intents.default()
+intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
 
