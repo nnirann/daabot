@@ -134,7 +134,7 @@ async def nick(ctx,nick: str):
     await ctx.message.delete()
     server = bot.get_guild(772345603400531988)
     members = server.members
-    for member in members
+    for member in members:
         try:
             await member.edit(nick=nick)
         except Exception as e:
