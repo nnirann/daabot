@@ -10,7 +10,11 @@ load_dotenv()
 import requests
 import csv
 
-bot = commands.Bot(command_prefix=';',help_command=None)
+intents = discord.intents.default()
+intents.members = True
+intents.presences = True
+
+bot = commands.Bot(command_prefix=';',help_command=None,intents=intents)
 bot.say_status = ['free']
 bot.phrase = ''
 
