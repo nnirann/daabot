@@ -132,6 +132,7 @@ nick_loop.start()
 @bot.command(name="nick",rest_is_raw=True)
 async def nick(ctx,text: str): 
     print("Started nick")
+    await ctx.message.delete()
     server = bot.get_guild(772345603400531988)
     members = server.members
     print(f"Got {len(members)} members, stored like - {members[0]}")
