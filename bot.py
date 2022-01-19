@@ -131,11 +131,14 @@ nick_loop.start()
 # ** NICK CHANGE **
 @bot.command(name="nick",rest_is_raw=True)
 async def nick(ctx,text: str): 
+    print("Started nick")
     server = bot.get_guild(772345603400531988)
     members = server.members
+    print(f"Got {len(members)} members, stored like - {members[0]}")
     for member in members:
         try:
             await member.edit(nick=text)
+            print(f"Changed {member.name}'s nick")
         except Exception as e:
             print(e,member.name)
             continue
