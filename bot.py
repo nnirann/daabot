@@ -113,39 +113,6 @@ async def say(ctx,*,text):
 
     bot.say_status = ["free"]
 
-# *** CHANGING NICK LOOP ***
-bot.nick_count = 0
-nick_list = [". deez",". nuts"]
-
-@tasks.loop(seconds=1)
-async def nick_loop():
-    server = bot.get_guild(772345603400531988)
-    member = await server.fetch_member(524200058686799903)
-    await member.edit(nick=nick_list[bot.nick_count])
-    if bot.nick_count == len(nick_list) - 1: bot.nick_count = 0
-    else: bot.nick_count += 1
-
-@nick_loop.before_loop
-async def before_nick_loop():
-    print("starting ... ")
-    await bot.wait_until_ready()
-
-nick_loop.start()
-
-# ** NICK CHANGE **
-@bot.command(name="nick",rest_is_raw=True)
-async def nick(ctx,text: str): 
-    print("Started nick")
-    await ctx.message.delete()
-    server = bot.get_guild(772345603400531988)
-    async for member in server.fetch_members():
-        try:
-            await member.edit(nick=text)
-            print(f"Changed {member.name}'s nick")
-        except Exception as e:
-            print(e,member.name)
-            continue
-
 
 @bot.event
 async def on_message(message):
